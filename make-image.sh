@@ -7,7 +7,6 @@ pwd
 echo "[i] fs:"
 ls -la
 
-cd ccd/
-
 useradd v
-su -c "build-simple-cdd --profiles test" v
+cp -R /workspace/cdd/ /home/v/
+su -c "cd /home/v/cdd/ && build-simple-cdd --profiles test" v
