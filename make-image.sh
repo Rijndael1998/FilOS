@@ -20,4 +20,4 @@ echo "[i] v files:"
 ls -la /home/v/
 ls -la /home/v/cdd/
 
-su -c "cd /home/v/cdd/ && build-simple-cdd --profiles test" v
+su -c "cd /home/v/cdd/ && build-simple-cdd --dist bookworm --profiles test" v
