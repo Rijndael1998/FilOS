@@ -1,3 +1,7 @@
 #!/bin/bash
 
-echo "image made"
+echo "[i] making image"
+
+cd ccd/
+
+build-simple-cdd --profiles test
