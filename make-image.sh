@@ -9,5 +9,5 @@ ls -la
 
 cd ccd/
 
-adduser v
+useradd v
 su -c "build-simple-cdd --profiles test" v
