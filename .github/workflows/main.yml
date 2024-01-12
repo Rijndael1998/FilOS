@@ -8,14 +8,17 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Install Dependencies (If needed)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y YOUR_DEPENDENCY
+    # - name: Install Dependencies (If needed)
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y YOUR_DEPENDENCY
 
     - name: Run Script
       run: |
-        chmod +x ./path/to/your-script.sh
-        ./path/to/your-script.sh
+        docker run --name debian-container -v "${{ github.workspace }}:/workspace" debian:buster /bin/bash -c "\
+          apt-get update && \
+          apt-get install -y simple-cdd && \
+          chmod +x /workspace/make-image.sh && \
+          /workspace/make-image.sh"
