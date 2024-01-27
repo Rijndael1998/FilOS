@@ -16,7 +16,8 @@ jobs:
         sudo apt -y full-upgrade
 
     - name: Install deps
-      run: sudo apt -y install \
+      run: |
+        sudo apt -y install \
         debootstrap \
         squashfs-tools \
         xorriso \
@@ -57,4 +58,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: FilOS.iso
-        path: /linux-custom.iso
+        path: /FilOS.iso
