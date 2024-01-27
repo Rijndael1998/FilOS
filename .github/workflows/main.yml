@@ -25,8 +25,8 @@ jobs:
 #      run: chroot ./chroot /bin/bash 
 
     - name: Create the ISO
-      run: sudo xorriso \
-        -as mkisofs \
+      run: |
+        sudo xorriso -as mkisofs \
         -o /FilOS.iso \
         -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
         -c isolinux/boot.cat \
