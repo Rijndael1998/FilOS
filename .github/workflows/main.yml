@@ -1,23 +1,25 @@
-name: Run Script on Debian
+name: Run Script on Ubuntu
 
 on: [push]
 
 jobs:
   build-and-run-script:
-    runs-on: ubuntu-latest  # This uses the latest Ubuntu runner, which is a Debian-based system
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # - name: Install Dependencies (If needed)
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y YOUR_DEPENDENCY
+    - name: Update runner
+      run: |
+        sudo apt -y update
+        sudo apt -y full-upgrade
+
+    - name: Install deps
+      run: sudo apt -y install debootstrap curl
+    
+    - name: Create Root FS
+      run: debootstrap --variant=minbase --arch=amd64 buster ./chroot http://deb.debian.org/debian/
 
     - name: Run Script
-      run: |
-        apt -y update && \
-          apt -y full-upgrade && \
-          chmod +x /workspace/make-image.sh && \
-          bash /workspace/make-image.sh"
+      run: bash /workspace/make-image.sh
