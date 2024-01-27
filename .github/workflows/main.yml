@@ -33,6 +33,11 @@ jobs:
     - name: Create Root FS
       run: sudo debootstrap --variant=minbase --arch=amd64 buster ./chroot http://deb.debian.org/debian/
 
+    - name: Copy ISOLINUX files
+      run: |
+        sudo cp /usr/lib/ISOLINUX/isolinux.bin ./chroot/isolinux/
+        sudo cp /usr/lib/syslinux/modules/bios/* ./chroot/isolinux/
+
 #    - name: Chroot into the environment and set up
 #      run: chroot ./chroot /bin/bash 
 
