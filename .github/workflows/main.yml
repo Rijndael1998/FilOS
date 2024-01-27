@@ -16,7 +16,19 @@ jobs:
         sudo apt -y full-upgrade
 
     - name: Install deps
-      run: sudo apt -y install debootstrap curl isolinux xorriso syslinux-utils
+      run: sudo apt -y install \
+        debootstrap \
+        squashfs-tools \
+        xorriso \
+        isolinux \
+        syslinux-efi \
+        grub-pc-bin \
+        grub-efi-amd64-bin \
+        grub-efi-ia32-bin \
+        mtools \
+        dosfstools \
+        parted \
+        debian-archive-keyring
     
     - name: Create Root FS
       run: sudo debootstrap --variant=minbase --arch=amd64 buster ./chroot http://deb.debian.org/debian/
