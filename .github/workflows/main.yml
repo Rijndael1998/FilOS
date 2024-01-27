@@ -19,7 +19,7 @@ jobs:
       run: sudo apt -y install debootstrap curl
     
     - name: Create Root FS
-      run: debootstrap --variant=minbase --arch=amd64 buster ./chroot http://deb.debian.org/debian/
+      run: sudo debootstrap --variant=minbase --arch=amd64 buster ./chroot http://deb.debian.org/debian/
 
     - name: Run Script
       run: bash /workspace/make-image.sh
