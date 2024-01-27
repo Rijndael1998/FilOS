@@ -16,7 +16,7 @@ jobs:
         sudo apt -y full-upgrade
 
     - name: Install deps
-      run: sudo apt -y install debootstrap curl
+      run: sudo apt -y install debootstrap curl isolinux xorriso
     
     - name: Create Root FS
       run: sudo debootstrap --variant=minbase --arch=amd64 buster ./chroot http://deb.debian.org/debian/
