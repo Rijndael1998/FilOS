@@ -21,5 +21,14 @@ jobs:
     - name: Create Root FS
       run: sudo debootstrap --variant=minbase --arch=amd64 buster ./chroot http://deb.debian.org/debian/
 
-    - name: Run Script
-      run: bash /workspace/make-image.sh
+#    - name: Chroot into the environment and set up
+#      run: chroot ./chroot /bin/bash 
+
+    - name: Create the ISO
+      run: sudo xorriso -as mkisofs -o /FilOS.iso -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin ./chroot
+
+    - name: Upload ISO
+      uses: actions/upload-artifact@v2
+      with:
+        name: FilOS.iso
+        path: /linux-custom.iso
