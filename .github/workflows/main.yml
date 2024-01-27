@@ -17,8 +17,7 @@ jobs:
 
     - name: Run Script
       run: |
-        docker run --name debian-container -v "${{ github.workspace }}:/workspace" debian:buster /bin/bash -c "\
-          apt-get update && \
-          apt-get install -y simple-cdd && \
+        apt -y update && \
+          apt -y full-upgrade && \
           chmod +x /workspace/make-image.sh && \
-          /workspace/make-image.sh"
+          bash /workspace/make-image.sh"
