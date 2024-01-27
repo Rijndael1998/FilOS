@@ -16,7 +16,7 @@ jobs:
         sudo apt -y full-upgrade
 
     - name: Install deps
-      run: sudo apt -y install debootstrap curl isolinux xorriso
+      run: sudo apt -y install debootstrap curl isolinux xorriso syslinux-utils
     
     - name: Create Root FS
       run: sudo debootstrap --variant=minbase --arch=amd64 buster ./chroot http://deb.debian.org/debian/
@@ -25,7 +25,16 @@ jobs:
 #      run: chroot ./chroot /bin/bash 
 
     - name: Create the ISO
-      run: sudo xorriso -as mkisofs -o /FilOS.iso -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin ./chroot
+      run: sudo xorriso \
+        -as mkisofs \
+        -o /FilOS.iso \
+        -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
+        -c isolinux/boot.cat \
+        -b isolinux/isolinux.bin \
+        -no-emul-boot \
+        -boot-load-size 4 \
+        -boot-info-table \
+        ./chroot
 
     - name: Upload ISO
       uses: actions/upload-artifact@v2
