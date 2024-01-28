@@ -1,0 +1,24 @@
+name: Create Live image
+
+on: [push]
+
+jobs:
+  build-and-run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: |
+          cd build_scripts
+          sed -i -E 's/TARGET_UBUNTU_VERSION=(.*)/TARGET_UBUNTU_VERSION="jammy"/g' default_config.sh
+          ./build.sh -
+          cd ..
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ubuntu-from-scratch
+          path: |
+            build_scripts/ubuntu-from-scratch.iso
+            build_scripts/image/md5sum.txt
