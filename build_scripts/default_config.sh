@@ -43,6 +43,16 @@ function customize_image() {
     python3 \
     git
 
+    # useful tools
+    apt-get install -y \
+    clamav-daemon \
+    terminator \
+    apt-transport-https \
+    curl \
+    vim \
+    nano \
+    less
+
 
     # purge
     apt-get purge -y \
@@ -62,7 +72,7 @@ function customize_image() {
     gnome-calendar \
     gnome-characters \
     gnome-disk-utility \
-    
+
 }
 
 # Used to version the configuration.  If breaking changes occur, manual
