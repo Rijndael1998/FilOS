@@ -42,8 +42,7 @@ function customize_image() {
     # install graphics and desktop
     apt-get install -y \
     plymouth-theme-ubuntu-logo \
-    ubuntu-gnome-desktop \
-    ubuntu-gnome-wallpapers
+    ubuntu-gnome-desktop
 
     # useful tools
     apt-get install -y \
