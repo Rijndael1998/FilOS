@@ -1,0 +1,48 @@
+name: Create Live image
+
+on: [push]
+
+jobs:
+  build-and-run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Update runner
+      run: |
+        sudo apt -y update
+        sudo apt -y full-upgrade
+
+    - name: Install deps
+      run: |
+        sudo apt -y install \
+          binutils \
+          debootstrap \
+          squashfs-tools \
+          xorriso \
+          grub-pc-bin \
+          grub-efi-amd64-bin \
+          mtools
+    
+    - name: Create Root FS
+      run: |
+        mkdir $HOME/live-ubuntu-from-scratch
+        sudo debootstrap \
+          --arch=amd64 \
+          --variant=minbase \
+          focal \
+          $HOME/live-ubuntu-from-scratch/chroot \
+          http://us.archive.ubuntu.com/ubuntu/
+
+    - name: Bind External Mounts
+      run: |
+        sudo mount --bind /dev $HOME/live-ubuntu-from-scratch/chroot/dev
+        sudo mount --bind /run $HOME/live-ubuntu-from-scratch/chroot/run
+
+    - name: Upload ISO
+      uses: actions/upload-artifact@v2
+      with:
+        name: FilOS.iso
+        path: /FilOS.iso
