@@ -16,12 +16,18 @@ jobs:
           ./build.sh -
           cd ..
 
-      - name: Archive artifacts
+      - name: Upload Image
         uses: actions/upload-artifact@v4
         with:
-          name: ubuntu-from-scratch
+          name: FilOS
           path: |
-            build_scripts/ubuntu-from-scratch.iso
+            build_scripts/FilOS.iso
             build_scripts/image/md5sum.txt
           compression-level: 0
+
+      - name: Upload app list
+        uses: actions/upload-artifact@v4
+        with:
+          name: App List
+          path: build_scripts/installed.txt
 
