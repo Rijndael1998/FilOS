@@ -41,7 +41,6 @@ export TARGET_PACKAGE_REMOVE="
 function customize_image() {
     # install graphics and desktop
     apt-get install -y \
-    plymouth-theme-ubuntu-logo \
     ubuntu-gnome-desktop
 
     # useful tools
