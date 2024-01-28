@@ -130,6 +130,9 @@ function run_chroot() {
         sudo rm -f chroot/root/config.sh
     fi
 
+    sudo ls -la chroot
+    sudo mv chroot/installed.txt $SCRIPT_DIR/
+
     chroot_exit_teardown
 }
 

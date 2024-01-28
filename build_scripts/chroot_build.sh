@@ -162,6 +162,9 @@ EOF
     dpkg-reconfigure network-manager
 
     apt-get clean -y
+
+    # output final package list
+    sudo apt list --installed | sudo tee /installed.txt
 }
 
 function finish_up() { 
