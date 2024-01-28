@@ -21,7 +21,7 @@ jobs:
         with:
           name: FilOS
           path: |
-            build_scripts/ubuntu-from-scratch.iso
+            build_scripts/FilOS.iso
             build_scripts/image/md5sum.txt
           compression-level: 0
 
