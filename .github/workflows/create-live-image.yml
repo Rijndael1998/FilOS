@@ -20,5 +20,5 @@ jobs:
         with:
           name: ubuntu-from-scratch
           path: |
-            scripts/ubuntu-from-scratch.iso
-            scripts/image/md5sum.txt
+            build_scripts/ubuntu-from-scratch.iso
+            build_scripts/image/md5sum.txt
