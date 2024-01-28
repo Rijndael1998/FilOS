@@ -42,12 +42,9 @@ function customize_image() {
     # useful tools
     apt-get install -y \
     clamav-daemon \
-    terminator \
     apt-transport-https \
     curl \
-    vim \
-    nano \
-    less
+    memtest86+ \
 
     # purge
     apt-get purge -y \
