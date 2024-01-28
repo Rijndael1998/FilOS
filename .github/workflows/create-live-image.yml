@@ -3,18 +3,25 @@ name: Create Live image
 on: [push]
 
 jobs:
-  build-and-run-script:
+  Create-Live-Image:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Build
         run: |
           cd build_scripts
           sed -i -E 's/TARGET_UBUNTU_VERSION=(.*)/TARGET_UBUNTU_VERSION="jammy"/g' default_config.sh
           ./build.sh -
           cd ..
+
+      - name: Upload app list
+        uses: actions/upload-artifact@v4
+        with:
+          name: App List
+          path: build_scripts/installed.txt
+          compression-level: 9
+
 
       - name: Upload FilOS Image
         uses: actions/upload-artifact@v4
@@ -24,10 +31,3 @@ jobs:
             build_scripts/FilOS.iso
             build_scripts/image/md5sum.txt
           compression-level: 0
-
-      - name: Upload app list
-        uses: actions/upload-artifact@v4
-        with:
-          name: App List
-          path: build_scripts/installed.txt
-          compression-level: 9
