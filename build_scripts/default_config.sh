@@ -50,6 +50,7 @@ function customize_image() {
     apt-transport-https \
     curl \
     memtest86+ \
+    python3 \
 
     # purge
     apt-get purge -y \
@@ -60,7 +61,32 @@ function customize_image() {
     gnome-sudoku \
     aisleriot \
     hitori \
-    firefox
+    firefox \
+    cheese cheese-common \
+    discover discover-data \
+    fdisk \
+    gedit gedit-common \
+    gnome-calendar gnome-disk-utility gnome-font-viewer \
+    gnome-online-accounts \
+    libreoffice-base-core \
+    libreoffice-calc \
+    libreoffice-common \
+    libreoffice-core \
+    libreoffice-draw \
+    libreoffice-gnome \
+    libreoffice-gtk3 \
+    libreoffice-impress \
+    libreoffice-math \
+    libreoffice-pdfimport \
+    libreoffice-style-breeze \
+    libreoffice-style-colibre \
+    libreoffice-style-elementary \
+    libreoffice-style-yaru \
+    libreoffice-writer \
+    remmina-common remmina-plugin-rdp remmina-plugin-secret \
+    remmina-plugin-vnc remmina \
+    thunderbird thunderbird-gnome-support \
+    
 }
 
 # Used to version the configuration.  If breaking changes occur, manual
