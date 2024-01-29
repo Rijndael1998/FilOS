@@ -51,6 +51,7 @@ function customize_image() {
     curl \
     memtest86+ \
     python3 \
+    spice-vdagent \
 
     # purge
     apt-get purge -y \
@@ -86,7 +87,7 @@ function customize_image() {
     remmina-common remmina-plugin-rdp remmina-plugin-secret \
     remmina-plugin-vnc remmina \
     thunderbird thunderbird-gnome-support \
-    
+
 }
 
 # Used to version the configuration.  If breaking changes occur, manual
