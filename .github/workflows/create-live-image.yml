@@ -30,4 +30,4 @@ jobs:
           path: |
             build_scripts/FilOS.iso
             build_scripts/image/md5sum.txt
-          compression-level: 0
+          compression-level: 1
