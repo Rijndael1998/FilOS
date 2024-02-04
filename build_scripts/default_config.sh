@@ -52,6 +52,9 @@ function customize_image() {
     memtest86+ \
     python3 \
     spice-vdagent \
+    git \
+
+    git clone https://github.com/tassopsaltakis/FilOS/ /root/FilOS/
 
     # purge
     apt-get purge -y \
