@@ -1,4 +1,7 @@
+import getpass
+import hashlib
 import os
+import secrets
 import shutil
 import subprocess
 import ast
@@ -12,6 +15,7 @@ def get_absolute_path(current_dir, path):
 
     return os.path.normpath(f"{current_dir}/{path}")
 
+'''OS Commands'''
 
 def ls(current_dir, *args):
     # figure out if the path is absolute or not
@@ -139,6 +143,152 @@ def pip(current_dir, *args):
 
     else:
         print("Usage: pip [command] [additional arguments if needed]")
+
+
+
+'''User and Group Management'''
+
+
+def userman(*args):
+    if len(args) < 3:
+        print("Error: Not enough arguments provided.")
+        return
+
+    script_dir = os.path.dirname(os.path.realpath('__file__'))  # If you need the script directory
+    root_dir = os.path.abspath(os.path.join(script_dir, '..', '..', 'root'))
+    home_dir = os.path.join(root_dir, 'home')
+    config_dir = os.path.join(root_dir, 'config')
+    users_file = os.path.join(config_dir, 'users.txt')
+
+    option = args[1]
+    user_name = args[2]
+
+    if option == 'adduser':
+        user_path = os.path.join(home_dir, user_name)
+
+        # Check if user already exists
+        if os.path.exists(user_path):
+            return "User already exists."
+
+        os.makedirs(user_path)
+        with open(os.path.join(user_path, "start.txt"), 'w') as start_file:
+            start_file.write("Welcome to FilOS!")
+        password = getpass.getpass("Enter password: ")
+        password2 = getpass.getpass("Enter again: ")
+
+        if password != password2:
+            return "Passwords do not match."
+
+        # Salt, hash and save the password
+        password_salt = secrets.token_urlsafe(32)
+        salted_password = (password + password_salt).encode()
+        hashed_password = hashlib.sha256(salted_password).hexdigest()
+
+        # Save password hash and salt
+        user_data_path = os.path.join(user_path, "user_data")
+        os.makedirs(user_data_path, exist_ok=True)
+        with open(os.path.join(user_data_path, "access.txt"), 'w') as access_file:
+            access_file.write(f"{hashed_password},{password_salt}\n")
+
+        # Update user list
+        with open(users_file, 'a') as file:
+            file.write(f"{user_name}\n")
+        return "User Added"
+
+    elif option == 'deluser':
+        user_path = os.path.join(home_dir, user_name)
+        if os.path.exists(user_path):
+            shutil.rmtree(user_path)  # Corrected to remove directory
+
+        with open(users_file, "r") as f:
+            lines = f.readlines()
+        with open(users_file, "w") as f:
+            for line in lines:
+                if line.strip("\n") != user_name:
+                    f.write(line)
+        return "User Deleted"
+
+
+def groupman(*args):
+    # Check for minimum required arguments
+    if len(args) < 3:
+        print("Error: Not enough arguments provided.")
+        return
+
+    script_dir = os.path.dirname(os.path.realpath('__file__'))
+    root_dir = os.path.abspath(os.path.join(script_dir, '..', '..', 'root'))
+    config_dir = os.path.join(root_dir, 'config')
+    groups_file = os.path.join(config_dir, 'groups.txt')
+
+    option = args[1]
+    group_name = args[2]
+
+    if option in ['addgroup', 'delgroup'] and len(args) != 3:
+        print("Error: Incorrect number of arguments for the operation.")
+        return
+
+    if option == 'addgroup':
+        with open(groups_file, 'r') as file:
+            groups = file.read()
+            if group_name + ':' in groups:
+                print(f"Group '{group_name}' already exists.")
+                return
+
+        with open(groups_file, 'a') as file:
+            file.write(f"{group_name}:\n")
+
+    elif option == 'delgroup':
+        with open(groups_file, "r") as f:
+            lines = f.readlines()
+        with open(groups_file, "w") as f:
+            for line in lines:
+                if line.strip("\n") != f"{group_name}:":
+                    f.write(line)
+
+    elif option == 'adduser':
+        if len(args) < 4:
+            print("Error: Not enough arguments for adding a user to a group.")
+            return
+
+        user_name = args[3]  # User name is the fourth argument
+        updated_groups = []
+        group_found = False
+
+        with open(groups_file, "r") as f:
+            for line in f:
+                if line.startswith(group_name + ":"):
+                    group_found = True
+                    if user_name not in line:
+                        line = line.strip() + f" {user_name}\n"  # Append the user to the group
+                updated_groups.append(line)
+
+        if not group_found:
+            print(f"Group '{group_name}' does not exist.")
+            return
+
+        with open(groups_file, "w") as f:
+            f.writelines(updated_groups)
+
+def sysset(*args):
+    file_path = os.path.join(config_dir, "colorCodes.txt")
+    option = args[0]
+    second_option = args[1]
+    if option == 'customize':
+        print("========================")
+        print("Customization Settings")
+        print("========================")
+        print("1. Appearance")
+        print("")
+        config_dir
+        with open(file_path, 'r') as file:
+            for line in file:
+                index, data = line.strip().split(':', 1)
+                if index == second_option:
+                    return data
+        return "Color not found"
+
+
+
 
 
 
