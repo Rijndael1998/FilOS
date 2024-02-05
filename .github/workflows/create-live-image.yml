@@ -16,7 +16,7 @@ jobs:
           sudo apt -y full-upgrade
 
       - name: Rename target
-      run: |
+        run: |
           cd build_scripts
           sed -i -E 's/TARGET_UBUNTU_VERSION=(.*)/TARGET_UBUNTU_VERSION="jammy"/g' default_config.sh
           cd ..
