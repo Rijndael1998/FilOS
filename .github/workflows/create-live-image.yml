@@ -12,8 +12,8 @@ jobs:
 
       - name: Update host
       - run: |
-        sudo apt -y update
-        sudo apt -y full-upgrade
+          sudo apt -y update
+          sudo apt -y full-upgrade
 
       - name: Build
         run: |
