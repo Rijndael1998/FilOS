@@ -7,7 +7,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Repo
       - uses: actions/checkout@v4
+
+      - name: Update host
+      - run: |
+        sudo apt -y update
+        sudo apt -y full-upgrade
+
       - name: Build
         run: |
           cd build_scripts
@@ -30,4 +37,4 @@ jobs:
           path: |
             build_scripts/FilOS.iso
             build_scripts/image/md5sum.txt
-          compression-level: 1
+          compression-level: 9
