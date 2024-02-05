@@ -15,11 +15,34 @@ jobs:
           sudo apt -y update
           sudo apt -y full-upgrade
 
+      - name: Rename target
+      run: |
+          cd build_scripts
+          sed -i -E 's/TARGET_UBUNTU_VERSION=(.*)/TARGET_UBUNTU_VERSION="jammy"/g' default_config.sh
+          cd ..
+
+      - name: Setup host
+        run: |
+          cd build_scripts
+          ./build.sh setup_host
+          cd ..
+
+      - name: Debootstrap
+        run: |
+          cd build_scripts
+          ./build.sh debootstrap
+          cd ..
+
+      - name: Run Chroot
+        run: |
+          cd build_scripts
+          ./build.sh run_chroot
+          cd ..
+
       - name: Build
         run: |
           cd build_scripts
-          sed -i -E 's/TARGET_UBUNTU_VERSION=(.*)/TARGET_UBUNTU_VERSION="jammy"/g' default_config.sh
-          ./build.sh -
+          ./build.sh build_iso
           cd ..
 
       - name: Upload app list
