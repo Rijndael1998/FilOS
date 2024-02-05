@@ -8,10 +8,10 @@ jobs:
 
     steps:
       - name: Checkout Repo
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
 
       - name: Update host
-      - run: |
+        run: |
           sudo apt -y update
           sudo apt -y full-upgrade
 
