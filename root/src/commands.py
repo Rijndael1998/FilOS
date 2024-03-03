@@ -7,6 +7,11 @@ import subprocess
 import ast
 import operator
 import sys
+import common
+import user_management
+from common import current_user_info
+from gbp import check_directory_access
+from common import current_user_info
 
 
 def get_absolute_path(current_dir, path):
@@ -28,9 +33,24 @@ def ls(current_dir, *args):
     except Exception as e:
         print(f"ls: cannot access '{path}': {e}")
 
+
 def cd(current_dir, *args):
-    new_dir = os.path.join(current_dir, args[0]) if args else current_dir
-    return new_dir if os.path.isdir(new_dir) else current_dir
+    username = current_user_info['username']
+    if args:
+        new_dir = os.path.join(current_dir, args[0]) if args else current_dir
+        # Convert new_dir to its absolute path to handle cases where new_dir is not in standard format
+        new_dir_abs = os.path.abspath(new_dir)
+
+        # Check if the user has access to the new directory
+        if check_directory_access(username, new_dir_abs):  # Use the corrected variable here
+            return new_dir if os.path.isdir(new_dir_abs) else current_dir
+        else:
+            print("Access denied.")
+            return current_dir
+    else:
+        # If no arguments, no directory change is attempted, so just return current_dir
+        return current_dir
+
 
 def pwd(current_dir, *args):
     print(current_dir)
@@ -107,6 +127,19 @@ def pad(current_dir, *args):
     else:
         print("Usage: pad filename")
 
+
+def browse(current_dir, *args):
+    # The path to the Browse script should be adjusted based on your directory structure
+    browse_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '..', '..', 'root', 'misc', 'browse', 'browse.py'))
+
+    if args:
+        # If arguments are provided, they can be forwarded to the Browse script
+        subprocess.run(['python', browse_path] + list(args))
+    else:
+        # If no arguments are provided, simply run the Browse script without any
+        subprocess.run(['python', browse_path])
+
 def calc(current_dir, *args):
     expression = ''.join(args)  # Joining args as the expression might be split into several arguments
     allowed_operators = {
@@ -150,111 +183,70 @@ def pip(current_dir, *args):
 
 
 def userman(*args):
-    if len(args) < 3:
-        print("Error: Not enough arguments provided.")
+
+    user_mgmt = user_management.UserManagement()  # Instantiate the UserManagement class
+    if len(args) < 2:
+        print("Usage: userman [adduser|deluser]")
         return
 
-    script_dir = os.path.dirname(os.path.realpath('__file__'))  # If you need the script directory
-    root_dir = os.path.abspath(os.path.join(script_dir, '..', '..', 'root'))
-    home_dir = os.path.join(root_dir, 'home')
-    config_dir = os.path.join(root_dir, 'config')
-    users_file = os.path.join(config_dir, 'users.txt')
-
     option = args[1]
-    user_name = args[2]
 
     if option == 'adduser':
-        user_path = os.path.join(home_dir, user_name)
-
-        # Check if user already exists
-        if os.path.exists(user_path):
-            return "User already exists."
-
-        os.makedirs(user_path)
-        with open(os.path.join(user_path, "start.txt"), 'w') as start_file:
-            start_file.write("Welcome to FilOS!")
+        username = input("Enter username: ")
         password = getpass.getpass("Enter password: ")
         password2 = getpass.getpass("Enter again: ")
 
         if password != password2:
-            return "Passwords do not match."
-
-        # Salt, hash and save the password
-        password_salt = secrets.token_urlsafe(32)
-        salted_password = (password + password_salt).encode()
-        hashed_password = hashlib.sha256(salted_password).hexdigest()
-
-        # Save password hash and salt
-        user_data_path = os.path.join(user_path, "user_data")
-        os.makedirs(user_data_path, exist_ok=True)
-        with open(os.path.join(user_data_path, "access.txt"), 'w') as access_file:
-            access_file.write(f"{hashed_password},{password_salt}\n")
-
-        # Update user list
-        with open(users_file, 'a') as file:
-            file.write(f"{user_name}\n")
-        return "User Added"
+            print("Passwords didn't match. Please try again.")
+        else:
+            user_mgmt.create_user(username, password)  # Call create_user on the instance
+            print("User Added")
 
     elif option == 'deluser':
-        user_path = os.path.join(home_dir, user_name)
+        username = input("Enter username: ")
+        user_path = os.path.join(common.home_dir, username)
         if os.path.exists(user_path):
             shutil.rmtree(user_path)  # Corrected to remove directory
 
-        with open(users_file, "r") as f:
+        with open(common.users_file, "r") as f:
             lines = f.readlines()
-        with open(users_file, "w") as f:
+        with open(common.users_file, "w") as f:
             for line in lines:
-                if line.strip("\n") != user_name:
+                if line.strip("\n") != username:
                     f.write(line)
         return "User Deleted"
 
 
 def groupman(*args):
-    # Check for minimum required arguments
-    if len(args) < 3:
-        print("Error: Not enough arguments provided.")
-        return
-
-    script_dir = os.path.dirname(os.path.realpath('__file__'))
-    root_dir = os.path.abspath(os.path.join(script_dir, '..', '..', 'root'))
-    config_dir = os.path.join(root_dir, 'config')
-    groups_file = os.path.join(config_dir, 'groups.txt')
-
     option = args[1]
-    group_name = args[2]
-
-    if option in ['addgroup', 'delgroup'] and len(args) != 3:
-        print("Error: Incorrect number of arguments for the operation.")
-        return
 
     if option == 'addgroup':
-        with open(groups_file, 'r') as file:
+        group_name = input("Enter Group Name: ")
+        with open(common.groups_file, 'r') as file:
             groups = file.read()
             if group_name + ':' in groups:
                 print(f"Group '{group_name}' already exists.")
                 return
 
-        with open(groups_file, 'a') as file:
-            file.write(f"{group_name}:\n")
+        with open(common.groups_file, 'a') as file:
+            file.write(f"\n{group_name}:")
 
     elif option == 'delgroup':
-        with open(groups_file, "r") as f:
+        group_name = input("Enter Group Name: ")
+        with open(common.groups_file, "r") as f:
             lines = f.readlines()
-        with open(groups_file, "w") as f:
+        with open(common.groups_file, "w") as f:
             for line in lines:
                 if line.strip("\n") != f"{group_name}:":
                     f.write(line)
 
     elif option == 'adduser':
-        if len(args) < 4:
-            print("Error: Not enough arguments for adding a user to a group.")
-            return
-
-        user_name = args[3]  # User name is the fourth argument
+        user_name = input("Enter User to add: ")
+        group_name = input("Enter which group to add " +user_name+ " to: ")
         updated_groups = []
         group_found = False
 
-        with open(groups_file, "r") as f:
+        with open(common.groups_file, "r") as f:
             for line in f:
                 if line.startswith(group_name + ":"):
                     group_found = True
@@ -266,11 +258,11 @@ def groupman(*args):
             print(f"Group '{group_name}' does not exist.")
             return
 
-        with open(groups_file, "w") as f:
+        with open(common.groups_file, "w") as f:
             f.writelines(updated_groups)
 
 def sysset(*args):
-    file_path = os.path.join(config_dir, "colorCodes.txt")
+    file_path = os.path.join(common.config_dir, "colorCodes.txt")
     option = args[0]
     second_option = args[1]
     if option == 'customize':
@@ -279,7 +271,7 @@ def sysset(*args):
         print("========================")
         print("1. Appearance")
         print("")
-        config_dir
+        common.config_dir
         with open(file_path, 'r') as file:
             for line in file:
                 index, data = line.strip().split(':', 1)
@@ -292,9 +284,7 @@ def sysset(*args):
 
 
 
-script_dir = os.path.dirname(os.path.abspath(__file__))  # This is your current script directory (src)
-root_dir = os.path.abspath(os.path.join(script_dir, '..', '..', 'root'))  # This goes up two levels to FilOS
-config_dir = os.path.join(root_dir, 'config')  # This is the full path to your config directory
+
 # New function to load commands from file
 def load_commands_from_file(file_path):
     command_map = {}
@@ -308,7 +298,7 @@ def load_commands_from_file(file_path):
     return command_map
 
 # Load commands from the commands.txt file
-commands = load_commands_from_file(os.path.join(config_dir, 'commands.txt'))
+commands = load_commands_from_file(os.path.join(common.config_dir, 'commands.txt'))
 
 
 # Function to execute commands based on the command name
